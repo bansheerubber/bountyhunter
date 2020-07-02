@@ -3,11 +3,8 @@ import React from 'react';
 import {
   Dimensions,
   Keyboard,
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   TextInput,
-  StatusBar,
   View,
 } from 'react-native';
 
@@ -16,8 +13,18 @@ import {
   padding
 } from '../helpers/style';
 
-export class SearchableMapView extends React.Component {
-  constructor(props) {
+interface OwnState {
+  searchText: string;
+  mapPaddingFix: {
+    height: string;
+  };
+}
+
+export class SearchableMapView extends React.Component<any, OwnState> {
+  private readonly search: React.RefObject<TextInput>;
+  private keyboardWillHideListener: EmitterSubscription;
+
+  constructor(props: any) {
     super(props);
     this.search = React.createRef();
 
@@ -37,13 +44,13 @@ export class SearchableMapView extends React.Component {
     this.keyboardWillHideListener.remove();
   }
 
-  blurSearch(event) {
+  blurSearch() {
     if(this.search.current) {
       this.search.current.blur();
     }
   }
 
-  onSearchChange(text) {
+  onSearchChange(text: string) {
     if(text !== null) {
       this.setState({
         searchText: text,
@@ -52,7 +59,7 @@ export class SearchableMapView extends React.Component {
   }
 
   // jiggle the height of the map b/c mapPadding is broken on android and this is how you fix it
-  onMapReady(event) {
+  onMapReady() {
     this.setState({
       mapPaddingFix: {
         height: '99.9%',
@@ -69,6 +76,9 @@ export class SearchableMapView extends React.Component {
   }
 
   render() {
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return (
       <View style={{flex: 1}}>
         <View style={styles.container}>
@@ -91,7 +101,13 @@ export class SearchableMapView extends React.Component {
           />
         </View>
         <View style={styles.searchContainer}>
-          <TextInput ref={this.search} value={this.state.searchText} onChange={this.onSearchChange.bind(this)} placeholder={'Search'} style={styles.search} />
+          <TextInput
+            ref={this.search}
+            value={this.state.searchText}
+            onChangeText={this.onSearchChange.bind(this)}
+            placeholder={'Search'}
+            style={styles.search}
+          />
         </View>
       </View>
     );
