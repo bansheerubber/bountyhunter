@@ -15,7 +15,7 @@ import {
 } from './views/searchableMapView';
 
 const App: () => React$Node = () => {
-  return <SearchableMapView />
+  return <SearchableMapView />;
 };
 
 export default App;
