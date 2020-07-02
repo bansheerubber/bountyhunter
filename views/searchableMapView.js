@@ -23,19 +23,49 @@ export class SearchableMapView extends React.Component {
 
     this.state = {
       searchText: '',
+      mapPaddingFix: {
+        height: '100%',
+      },
     };
   }
 
-  unFocusText(event) {
+  componentDidMount() {
+    this.keyboardWillHideListener = Keyboard.addListener('keyboardDidHide', this.blurSearch.bind(this));
+  }
+
+  componentWillUnmount() {
+    this.keyboardWillHideListener.remove();
+  }
+
+  blurSearch(event) {
     if(this.search.current) {
       this.search.current.blur();
     }
   }
 
   onSearchChange(text) {
+    if(text !== null) {
+      this.setState({
+        searchText: text,
+      });
+    }
+  }
+
+  // jiggle the height of the map b/c mapPadding is broken on android and this is how you fix it
+  onMapReady(event) {
     this.setState({
-      searchText: text,
+      mapPaddingFix: {
+        height: '99.9%',
+      },
     });
+
+    setTimeout(() => {
+      this.setState({
+        mapPaddingFix: {
+          height: '100%',
+        },
+      });
+    }, 100);
   }
 
   render() {
@@ -43,8 +73,15 @@ export class SearchableMapView extends React.Component {
       <View style={{flex: 1}}>
         <View style={styles.container}>
           <MapView
-            onPress={this.unFocusText.bind(this)}
-            style={styles.map}
+            mapPadding={{
+              left: 0,
+              right: 0,
+              top: 75,
+              bottom: 0,
+            }}
+            onMapReady={this.onMapReady.bind(this)}
+            onPress={this.blurSearch.bind(this)}
+            style={[styles.map, this.state.mapPaddingFix]}
             initialRegion={{
               latitude: 37.78825,
               longitude: -122.4324,
