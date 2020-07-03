@@ -11,11 +11,11 @@ import {
   padding
 } from './helpers/style';
 import {
-  SearchableMapView
-} from './views/searchableMapView';
+  CommentsView
+} from './views/commentsView';
 
 const App: () => React$Node = () => {
-  return <SearchableMapView />;
+  return <CommentsView />;
 };
 
 export default App;
