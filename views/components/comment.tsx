@@ -2,6 +2,7 @@ import React from "react";
 
 import {
   Dimensions,
+  LayoutChangeEvent,
   StyleSheet,
   Text,
   View,
@@ -30,7 +31,7 @@ export class Comment extends React.Component<any, OwnState> {
     };
   }
 
-  onProfilePictureLayout(event) {
+  onProfilePictureLayout(event: LayoutChangeEvent) {
     this.setState({
       profilePictureWidth: event.nativeEvent.layout.width,
     });

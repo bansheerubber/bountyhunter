@@ -8,9 +8,6 @@
 
 import React from 'react';
 import {
-  padding
-} from './helpers/style';
-import {
   CommentsView
 } from './views/commentsView';
 

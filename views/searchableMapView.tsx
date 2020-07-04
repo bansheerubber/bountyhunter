@@ -1,14 +1,23 @@
+import Geolocation, {GeoError} from 'react-native-geolocation-service';
 import React from 'react';
-
 import {
-  Dimensions,
+  Dimensions, EmitterSubscription,
   Keyboard,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
+import MapView, {
+  Marker,
+  Region,
+} from 'react-native-maps';
 
-import MapView from 'react-native-maps';
+import {
+  getLocationPermissions
+} from '../helpers/locationPermission';
+import {
+  MarkerCallout
+} from './components/markerCallout';
 import {
   padding
 } from '../helpers/style';
@@ -18,11 +27,15 @@ interface OwnState {
   mapPaddingFix: {
     height: string;
   };
+  latitude: number;
+  longitude: number;
+  region: Region;
 }
 
 export class SearchableMapView extends React.Component<any, OwnState> {
   private readonly search: React.RefObject<TextInput>;
-  private keyboardWillHideListener: EmitterSubscription;
+  private keyboardWillHideListener?: EmitterSubscription;
+  private watchId: number | undefined = undefined;
 
   constructor(props: any) {
     super(props);
@@ -33,6 +46,14 @@ export class SearchableMapView extends React.Component<any, OwnState> {
       mapPaddingFix: {
         height: '100%',
       },
+      latitude: 0,
+      longitude: 0,
+      region: {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
     };
   }
 
@@ -41,7 +62,11 @@ export class SearchableMapView extends React.Component<any, OwnState> {
   }
 
   componentWillUnmount() {
-    this.keyboardWillHideListener.remove();
+    this.keyboardWillHideListener?.remove();
+
+    if(this.watchId) {
+      Geolocation.clearWatch(this.watchId);
+    }
   }
 
   blurSearch() {
@@ -73,12 +98,56 @@ export class SearchableMapView extends React.Component<any, OwnState> {
         },
       });
     }, 100);
+
+    getLocationPermissions().then(() => {
+      Geolocation.getCurrentPosition(
+        (position) => this.setLocation(position, true),
+        (error: GeoError) => { console.error(error) },
+        { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000, }
+      );
+
+      this.watchId = Geolocation.watchPosition(
+        (position) => this.setLocation(position),
+        (error: GeoError) => { console.error(error); },
+        { enableHighAccuracy: true, interval: 60000, }
+      );
+    });
+  }
+
+  setLocation(
+    position: {
+      coords: {
+        latitude: number;
+        longitude: number;
+      };
+    },
+    updateRegion: boolean = false
+  ) {
+    if(updateRegion) {
+      this.setState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        region: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: this.state.region.latitudeDelta,
+          longitudeDelta: this.state.region.longitudeDelta,
+        },
+      });
+    }
+    else {
+      this.setState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+    }
+  }
+
+  onRegionChange(region: Region) {
+    // note: don't set the region state in here, makes the map lag
   }
 
   render() {
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return (
       <View style={{flex: 1}}>
         <View style={styles.container}>
@@ -92,13 +161,21 @@ export class SearchableMapView extends React.Component<any, OwnState> {
             onMapReady={this.onMapReady.bind(this)}
             onPress={this.blurSearch.bind(this)}
             style={[styles.map, this.state.mapPaddingFix]}
-            initialRegion={{
-              latitude: 37.78825,
-              longitude: -122.4324,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          />
+            region={this.state.region}
+            onRegionChange={this.onRegionChange.bind(this)}
+          >
+            <Marker
+              coordinate={{
+                latitude: this.state.latitude,
+                longitude: this.state.longitude,
+              }}
+              title={'Current Location'}
+              style={styles.myPositionMarker}
+            >
+              <View style={styles.myPosition} />
+              <MarkerCallout title={'Your Location'} />
+            </Marker>
+          </MapView>
         </View>
         <View style={styles.searchContainer}>
           <TextInput
@@ -141,7 +218,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius: 8,
     shadowColor: '#000',
-    shadowOpacity: 0.58,
-    elevation: 5,
+    shadowOpacity: 1,
+    elevation: 25,
+  },
+  myPosition: {
+    width: 18,
+    height: 18,
+    borderRadius: 18 / 2,
+    borderColor: '#FFF',
+    borderWidth: 2,
+    backgroundColor: '#21bcff',
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    elevation: 15,
+  },
+  myPositionMarker: {
+    zIndex: 1000,
   },
 });
