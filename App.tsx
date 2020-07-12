@@ -8,11 +8,11 @@
 
 import React from 'react';
 import {
-  CommentsView
-} from './views/commentsView';
+  SearchableMapView
+} from './views/searchableMapView';
 
-const App: () => React$Node = () => {
-  return <CommentsView />;
+const App: () => JSX.Element = () => {
+  return <SearchableMapView />;
 };
 
 export default App;

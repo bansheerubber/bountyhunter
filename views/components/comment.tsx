@@ -13,7 +13,9 @@ import {
 } from "../../helpers/style";
 
 import Image from 'react-native-scalable-image';
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
+import {
+  FontAwesomeIcon
+} from "@fortawesome/react-native-fontawesome";
 import {
   faEllipsisH,
   faShareSquare,

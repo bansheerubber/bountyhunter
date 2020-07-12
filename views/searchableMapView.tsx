@@ -13,11 +13,14 @@ import MapView, {
 } from 'react-native-maps';
 
 import {
+  CurrentPosition
+} from './components/currentPosition';
+import {
   getLocationPermissions
 } from '../helpers/locationPermission';
 import {
-  MarkerCallout
-} from './components/markerCallout';
+  RadarAnimation
+} from './components/radarAnimation';
 import {
   padding
 } from '../helpers/style';
@@ -164,17 +167,8 @@ export class SearchableMapView extends React.Component<any, OwnState> {
             region={this.state.region}
             onRegionChange={this.onRegionChange.bind(this)}
           >
-            <Marker
-              coordinate={{
-                latitude: this.state.latitude,
-                longitude: this.state.longitude,
-              }}
-              title={'Current Location'}
-              style={styles.myPositionMarker}
-            >
-              <View style={styles.myPosition} />
-              <MarkerCallout title={'Your Location'} />
-            </Marker>
+            <CurrentPosition latitude={this.state.latitude} longitude={this.state.longitude} />
+            <RadarAnimation size={500} latitude={this.state.latitude} longitude={this.state.longitude} />
           </MapView>
         </View>
         <View style={styles.searchContainer}>
@@ -220,19 +214,5 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 1,
     elevation: 25,
-  },
-  myPosition: {
-    width: 18,
-    height: 18,
-    borderRadius: 18 / 2,
-    borderColor: '#FFF',
-    borderWidth: 2,
-    backgroundColor: '#21bcff',
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    elevation: 15,
-  },
-  myPositionMarker: {
-    zIndex: 1000,
   },
 });
