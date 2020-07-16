@@ -1,7 +1,10 @@
-import Geolocation, {GeoError} from 'react-native-geolocation-service';
+import Geolocation, {
+  GeoError
+} from 'react-native-geolocation-service';
 import React from 'react';
 import {
-  Dimensions, EmitterSubscription,
+  Dimensions,
+  EmitterSubscription,
   Keyboard,
   StyleSheet,
   TextInput,
@@ -168,7 +171,7 @@ export class SearchableMapView extends React.Component<any, OwnState> {
             onRegionChange={this.onRegionChange.bind(this)}
           >
             <CurrentPosition latitude={this.state.latitude} longitude={this.state.longitude} />
-            <RadarAnimation size={500} latitude={this.state.latitude} longitude={this.state.longitude} />
+            <RadarAnimation size={Dimensions.get('window').width - 20} latitude={this.state.latitude} longitude={this.state.longitude} />
           </MapView>
         </View>
         <View style={styles.searchContainer}>

@@ -16,12 +16,14 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/react-native-fontawesome": "^0.2.5",
     "@types/geojson": "^7946.0.7",
+    "@types/react-redux": "^7.1.9",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-geolocation-service": "^5.0.0",
     "react-native-maps": "^0.27.1",
     "react-native-scalable-image": "^1.0.0",
-    "react-native-svg": "^12.1.0"
+    "react-native-svg": "^12.1.0",
+    "react-redux": "^7.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
